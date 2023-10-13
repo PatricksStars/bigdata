@@ -1,0 +1,31 @@
+spring:
+  kafka:
+    # 指定kafka 代理地址，可以多个
+    bootstrap-servers: ip:port
+    producer: # 生产者
+      retries: 1 # 设置大于0的值，则客户端会将发送失败的记录重新发送
+      # 每次批量发送消息的数量
+      batch-size: 16384
+      buffer-memory: 33554432
+      # 指定消息key和消息体的编解码方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #修改最大向kafka推送消息大小
+      properties:
+        max.request.size: 52428800
+    consumer:
+      kafka:
+        kafka-topic-names: testTopic
+      #手动提交offset保证数据一定被消费
+      enable-auto-commit: false
+      #指定从最近地方开始消费(earliest)
+      auto-offset-reset: latest
+      #消费者组
+      group-id: dev
+    properties:
+      security:
+        protocol: SASL_PLAINTEXT
+      sasl:
+        mechanism: PLAIN
+        jaas:
+          config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="producer" password="XXXX";'
